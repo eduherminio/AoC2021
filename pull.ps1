@@ -1,14 +1,17 @@
-# Install-Module -Name Microsoft.PowerShell.SecretsManagement -RequiredVersion 0.2.0-alpha1 -AllowPrerelease
-# Import-Module Microsoft.PowerShell.SecretsManagement
+# Install-Module -Name Microsoft.PowerShell.SecretManagement
+# Install-Module -Name Microsoft.PowerShell.SecretStore
 
-# Add-Secret -Name AoCSessionId -Secret "..."
+# Import-Module Microsoft.PowerShell.SecretManagement
+# Register-SecretVault -Name SecretStore -ModuleName Microsoft.PowerShell.SecretStore -DefaultVault
+
+# Set-Secret -Name AoCSessionId -Secret "..."
 
 if ($args.Count -eq 0) {
 	Write-Host "Please provide the day number"
 	exit 1
 }
 
-$year = "2020"
+$year = "2021"
 $day = $args[0]
 
 $outputFile = If ($day -ge 10) { "$day.txt" } Else { "0$day.txt" }
