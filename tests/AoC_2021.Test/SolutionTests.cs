@@ -1,8 +1,6 @@
+using AdventOfCode;
 using AoCHelper;
 using NUnit.Framework;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace AoC_2021.Test
 {
