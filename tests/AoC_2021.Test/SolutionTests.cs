@@ -8,13 +8,18 @@ namespace AoC_2021.Test
     {
         public class Solutions
         {
-            [TestCase(typeof(Day_01), "988771", "171933104")]
+            [TestCase(typeof(Day_01), "Solution to Day 1, part 1", "Solution to Day 1, part 2")]
             public async Task Test(Type type, string sol1, string sol2)
             {
-                var instance = Activator.CreateInstance(type) as BaseDay;
-
-                Assert.AreEqual(sol1, await instance.Solve_1());
-                Assert.AreEqual(sol2, await instance.Solve_2());
+                if (Activator.CreateInstance(type) is BaseDay instance)
+                {
+                    Assert.AreEqual(sol1, await instance.Solve_1());
+                    Assert.AreEqual(sol2, await instance.Solve_2());
+                }
+                else
+                {
+                    Assert.Fail();
+                }
             }
         }
     }
