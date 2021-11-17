@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AoCHelper" Version="1.0.0" />
+    <PackageReference Include="FileParser" Version="2.1.1" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
+    <PackageReference Include="SheepTools" Version="0.11.0" />
   </ItemGroup>
 
   <PropertyGroup>
