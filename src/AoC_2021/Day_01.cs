@@ -12,15 +12,13 @@ public class Day_01 : BaseDay
     public override ValueTask<string> Solve_1()
     {
         var result = 0;
-        var lastDepth = int.MaxValue;
 
-        foreach (var depth in _input)
+        for (int i = 1; i < _input.Length; ++i)
         {
-            if (depth > lastDepth)
+            if (_input[i] > _input[i - 1])
             {
                 ++result;
             }
-            lastDepth = depth;
         }
 
         return new(result.ToString());
@@ -29,18 +27,14 @@ public class Day_01 : BaseDay
     public override ValueTask<string> Solve_2()
     {
         const int n = 3;
-
         var result = 0;
-        var lastDepth = _input[..n].Sum();
 
         for (int i = n; i < _input.Length; ++i)
         {
-            var depth = lastDepth - _input[i - n] + _input[i];
-            if (depth > lastDepth)
+            if (_input[i] > _input[i - n])
             {
                 ++result;
             }
-            lastDepth = depth;
         }
 
         return new(result.ToString());
