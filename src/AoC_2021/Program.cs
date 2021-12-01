@@ -1,6 +1,4 @@
-﻿using AoCHelper;
-
-if (args.Length == 0)
+﻿if (args.Length == 0)
 {
     Solver.SolveLast(new SolverConfiguration { ClearConsole = false });
 }

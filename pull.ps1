@@ -11,6 +11,8 @@ if ($args.Count -eq 0) {
 	exit 1
 }
 
+cat .\Vault | ConvertTo-SecureString -AsPlainText -Force | Unlock-SecretStore
+
 $year = "2021"
 $day = $args[0]
 
