@@ -2,16 +2,13 @@
 
 namespace AoC_2021;
 
-public record DirectionCommnad(Direction Direction, int Value);
-
 public class Day_02 : BaseDay
 {
-    private readonly List<DirectionCommnad> _input;
+    private readonly List<(Direction Direction, int Value)> _input;
 
     public Day_02()
     {
-        _input = ParseInput();
-        //_input = ParseInput2();
+        _input = ParseInput().ToList();
     }
 
     public override ValueTask<string> Solve_1()
@@ -53,14 +50,13 @@ public class Day_02 : BaseDay
         return new((position.X * position.Y).ToString());
     }
 
-    private List<DirectionCommnad> ParseInput()
+    private IEnumerable<(Direction Direction, int Value)> ParseInput()
     {
         static Direction ParseDirection(string str)
         {
             return str switch
             {
                 "forward" => Direction.Right,
-                "backward" => Direction.Left,
                 "up" => Direction.Up,
                 "down" => Direction.Down,
                 _ => throw new()
@@ -69,14 +65,10 @@ public class Day_02 : BaseDay
 
         var file = new ParsedFile(InputFilePath);
 
-        var result = new List<DirectionCommnad>(2 * file.Count);
-
         while (!file.Empty)
         {
             var line = file.NextLine();
-            result.Add(new(ParseDirection(line.NextElement<string>()), line.NextElement<int>()));
+            yield return (ParseDirection(line.NextElement<string>()), line.NextElement<int>());
         }
-
-        return result;
     }
 }
