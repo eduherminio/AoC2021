@@ -8,6 +8,7 @@ namespace AoC_2021.Test
         public class Solutions
         {
             [TestCase(typeof(Day_01), "1527", "1575")]
+            [TestCase(typeof(Day_02), "1499229", "1340836560")]
             public async Task Test(Type type, string sol1, string sol2)
             {
                 if (Activator.CreateInstance(type) is BaseDay instance)
