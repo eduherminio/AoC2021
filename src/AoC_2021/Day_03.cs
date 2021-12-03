@@ -63,7 +63,7 @@ namespace AoC_2021
 
             var slice = input.Select(number => number[bitPosition] - '0');
 
-            var mostCommonChar = slice.Sum() >= input.Length / 2d
+            var mostCommonChar = 2 * slice.Sum() >= input.Length
                 ? isOxygenGeneratorRating ? '1' : '0'
                 : isOxygenGeneratorRating ? '0' : '1';
 
