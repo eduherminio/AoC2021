@@ -11,6 +11,10 @@ namespace AoC_2021
             _input = ParseInput();
         }
 
+        /// <summary>
+        /// ~11011 becomes 1111111111100100, so unfortunately epsilon isn't hyst ~gamma
+        /// </summary>
+        /// <returns></returns>
         public override ValueTask<string> Solve_1()
         {
             var gammaSb = new StringBuilder(_input[0].Length);
@@ -18,7 +22,7 @@ namespace AoC_2021
 
             for (int i = 0; i < _input[0].Length; ++i)
             {
-                var slice = _input.Select(number => int.Parse($"{number[i]}"));
+                var slice = _input.Select(number => number[i] - '0');
                 if (slice.Sum() > _input.Length / 2)
                 {
                     gammaSb.Append('0');
@@ -39,8 +43,8 @@ namespace AoC_2021
 
         public override ValueTask<string> Solve_2()
         {
-            var oxygenGeneratorRating = FindOxygenGeneratorRating(_input);
-            var co2ScrubberRating = FindCO2ScrubberRating(_input);
+            var oxygenGeneratorRating = FindRating(_input, isOxygenGeneratorRating: true);
+            var co2ScrubberRating = FindRating(_input, isOxygenGeneratorRating: false);
 
             return new($"{oxygenGeneratorRating * co2ScrubberRating}");
         }
@@ -50,36 +54,20 @@ namespace AoC_2021
             return File.ReadAllLines(InputFilePath);
         }
 
-        public static int FindOxygenGeneratorRating(string[] input, int bitPosition = 0)
+        public static int FindRating(string[] input, bool isOxygenGeneratorRating, int bitPosition = 0)
         {
             if (input.Length == 1)
             {
                 return Convert.ToInt32(input[0], 2);
             }
 
-            var slice = input.Select(number => int.Parse($"{number[bitPosition]}"));
+            var slice = input.Select(number => number[bitPosition] - '0');
 
             var mostCommonChar = slice.Sum() >= input.Length / 2d
-                ? '1'
-                : '0';
+                ? isOxygenGeneratorRating ? '1' : '0'
+                : isOxygenGeneratorRating ? '0' : '1';
 
-            return FindOxygenGeneratorRating(input.Where(number => number[bitPosition] == mostCommonChar).ToArray(), bitPosition + 1);
-        }
-
-        public static int FindCO2ScrubberRating(string[] input, int bitPosition = 0)
-        {
-            if (input.Length == 1)
-            {
-                return Convert.ToInt32(input[0], 2);
-            }
-
-            var slice = input.Select(number => int.Parse($"{number[bitPosition]}"));
-
-            var leastCommonChar = slice.Sum() >= input.Length / 2d
-                ? '0'
-                : '1';
-
-            return FindCO2ScrubberRating(input.Where(number => number[bitPosition] == leastCommonChar).ToArray(), bitPosition + 1);
+            return FindRating(input.Where(number => number[bitPosition] == mostCommonChar).ToArray(), isOxygenGeneratorRating, bitPosition + 1);
         }
     }
 }
