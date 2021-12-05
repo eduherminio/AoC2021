@@ -12,7 +12,7 @@ namespace AoC_2021
         }
 
         /// <summary>
-        /// ~11011 becomes 1111111111100100, so unfortunately epsilon isn't hyst ~gamma
+        /// ~11011 becomes 11...1100100, so unfortunately epsilon isn't just ~gamma
         /// </summary>
         /// <returns></returns>
         public override ValueTask<string> Solve_1()
