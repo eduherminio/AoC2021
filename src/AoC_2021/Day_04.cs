@@ -1,28 +1,29 @@
-﻿using SheepTools;
-using SheepTools.Model;
-
-namespace AoC_2021
+﻿namespace AoC_2021
 {
-    public record PointWithValue(/*int X, int Y, */int Value)/* : IntPoint(X, Y)*/
+    public record BingoNumber(int Value)
     {
-        public bool Completed { get; set; } = false;
+        public bool IsComplete { get; set; }
     }
 
-    public record BingoBoard(List<PointWithValue> Numbers)
+    public record BingoBoard(List<BingoNumber> Numbers)
     {
-        public bool ForSureCompleted { get; set; } = false;
-
         public const int BoardSize = 5;
 
-        public bool Completed(int numberIndex)
+        public bool IsComplete { get; private set; }
+
+        public int IncompleteNumbersSum => Numbers.Where(n => !n.IsComplete).Sum(n => n.Value);
+
+        public bool UpdateAndCheckIfComplete(int numberIndex)
         {
+            Numbers[numberIndex].IsComplete = true;
+
             var complete = true;
 
             var startY = numberIndex % BoardSize;
             for (int y = 0; y < BoardSize; ++y)
             {
                 var n = Numbers[startY + (BoardSize * y)];
-                if (!n.Completed)
+                if (!n.IsComplete)
                 {
                     complete = false;
                     break;
@@ -31,6 +32,7 @@ namespace AoC_2021
 
             if (complete)
             {
+                IsComplete = true;
                 return true;
             }
 
@@ -40,14 +42,20 @@ namespace AoC_2021
             for (int x = 0; x < BoardSize; ++x)
             {
                 var n = Numbers[(startX * BoardSize) + x];
-                if (!n.Completed)
+                if (!n.IsComplete)
                 {
                     complete = false;
                     break;
                 }
             }
 
-            return complete;
+            if (complete)
+            {
+                IsComplete = true;
+                return true;
+            }
+
+            return false;
         }
     }
 
@@ -71,14 +79,9 @@ namespace AoC_2021
                     var board = _inputBoards[boardIndex];
 
                     var foundNumberIndex = board.Numbers.FindIndex(n => n.Value == number);
-                    if (foundNumberIndex != -1)
+                    if (foundNumberIndex != -1 && board.UpdateAndCheckIfComplete(foundNumberIndex))
                     {
-                        board.Numbers[foundNumberIndex].Completed = true;
-
-                        if (board.Completed(foundNumberIndex))
-                        {
-                            return new($"{board.Numbers.Where(n => !n.Completed).Sum(n => n.Value) * number}");
-                        }
+                        return new($"{board.IncompleteNumbersSum * number}");
                     }
                 }
             }
@@ -94,24 +97,17 @@ namespace AoC_2021
                 for (int boardIndex = 0; boardIndex < _inputBoards.Count; ++boardIndex)
                 {
                     var board = _inputBoards[boardIndex];
-                    if (board.ForSureCompleted)
+                    if (board.IsComplete)
                     {
                         continue;
                     }
 
                     var foundNumberIndex = board.Numbers.FindIndex(n => n.Value == number);
-                    if (foundNumberIndex != -1)
+                    if (foundNumberIndex != -1
+                        && board.UpdateAndCheckIfComplete(foundNumberIndex)
+                        && _inputBoards.All(b => b.IsComplete))
                     {
-                        board.Numbers[foundNumberIndex].Completed = true;
-
-                        if (board.Completed(foundNumberIndex))
-                        {
-                            board.ForSureCompleted = true;
-                            if (_inputBoards.All(b => b.ForSureCompleted))
-                            {
-                                return new($"{board.Numbers.Where(n => !n.Completed).Sum(n => n.Value) * number}");
-                            }
-                        }
+                        return new($"{board.IncompleteNumbersSum * number}");
                     }
                 }
             }
@@ -124,25 +120,20 @@ namespace AoC_2021
             var file = new ParsedFile(InputFilePath, existingSeparator: new[] { ' ', ',' });
 
             var numbers = file.NextLine().ToList<int>();
-
-            var boards = new List<BingoBoard>();
-            var boardNumbers = new List<PointWithValue>();
+            var boards = new List<BingoBoard> { new(new()) };
 
             var y = 0;
             while (!file.Empty)
             {
-                if (y == 5)
+                if (y == BingoBoard.BoardSize)
                 {
                     y = 0;
-                    boards.Add(new BingoBoard(boardNumbers));
-                    boardNumbers = new List<PointWithValue>();
+                    boards.Add(new(new()));
                 }
 
-                boardNumbers.AddRange(file.NextLine().ToList<int>().Select((value, index) => new PointWithValue(value)));
+                boards.Last().Numbers.AddRange(file.NextLine().ToList<int>().Select(val => new BingoNumber(val)));
                 ++y;
             }
-
-            boards.Add(new BingoBoard(boardNumbers));
 
             return (numbers, boards);
         }
