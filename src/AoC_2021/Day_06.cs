@@ -11,9 +11,9 @@ namespace AoC_2021
             _input = ParseInput();
         }
 
-        public override ValueTask<string> Solve_1() => SolveSimple(80);
+        public override ValueTask<string> Solve_1() => SolveGroupingByAge(80);
 
-        public override ValueTask<string> Solve_2() => SolveReusingCalculations(256);
+        public override ValueTask<string> Solve_2() => SolveGroupingByAge(256);
 
         private List<int> ParseInput()
         {
@@ -22,7 +22,34 @@ namespace AoC_2021
             return file.ToList<int>();
         }
 
-        private ValueTask<string> SolveSimple(int days)
+        private ValueTask<string> SolveGroupingByAge(int days)
+        {
+            var fishCount = new long[9];
+            foreach (var group in _input.GroupBy(x => x))
+            {
+                fishCount[group.Key] = group.Count();
+            }
+
+            for (int dayIndex = 0; dayIndex < days; dayIndex++)
+            {
+                var fishCount0 = fishCount[0];
+                for (int i = 1; i < 9; ++i)
+                {
+                    fishCount[i - 1] = fishCount[i];
+                }
+
+                fishCount[8] = fishCount0;
+                fishCount[6] += fishCount0;
+            }
+            return new($"{fishCount.Sum()}");
+        }
+
+        /// <summary>
+        /// Only works for Part 1
+        /// </summary>
+        /// <param name="days"></param>
+        /// <returns></returns>
+        private ValueTask<string> Solve_BruteForce_Naive(int days)
         {
             var fish = new List<int>(_input);
 
@@ -48,7 +75,12 @@ namespace AoC_2021
             return new($"{fish.Count}");
         }
 
-        private ValueTask<string> Solve_Bruteforce_ParallelForeach(int days)
+        /// <summary>
+        /// 32.5 min, works with 16 GB of RAM
+        /// </summary>
+        /// <param name="days"></param>
+        /// <returns></returns>
+        private ValueTask<string> Solve_Bruteforce_GroupingByGenerationParallelForeach(int days)
         {
             var fishSet = _input.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
             object totalFishCountLock = new object();
@@ -102,7 +134,12 @@ namespace AoC_2021
             return new($"{totalFishCount}");
         }
 
-        private ValueTask<string> SolveReusingCalculations(int days)
+        /// <summary>
+        /// 7.5 min
+        /// </summary>
+        /// <param name="days"></param>
+        /// <returns></returns>
+        private ValueTask<string> Solve_BruteForce_ReusingCalculationsBetweenGenerations(int days)
         {
             var fishSet = _input.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
 
