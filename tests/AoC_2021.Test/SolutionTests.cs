@@ -12,7 +12,7 @@ namespace AoC_2021.Test
             [TestCase(typeof(Day_03), "3687446", "4406844")]
             [TestCase(typeof(Day_04), "39984", "8468")]
             [TestCase(typeof(Day_05), "7438", "21406")]
-            [TestCase(typeof(Day_06), "373378", "")]
+            [TestCase(typeof(Day_06), "373378", "1682576647495")]
             public async Task Test(Type type, string sol1, string sol2)
             {
                 if (Activator.CreateInstance(type) is BaseDay instance)
