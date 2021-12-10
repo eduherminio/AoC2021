@@ -13,50 +13,83 @@ public class Day_09 : BaseDay
 
     public override ValueTask<string> Solve_1()
     {
-        var result = 0;
-        List<(int X, int Y)> lowPoints = new();
+        var lowPointList = GetLowPoints(_input);
 
-        for (int y = 0; y < _input.Count; ++y)
-        {
-            for (int x = 0; x < _input[y].Count; ++x)
-            {
-                var value = _input[y][x];
-
-                for (int y1 = y - 1; y1 <= y + 1; ++y1)
-                {
-                    if (y1 < 0 || y1 > _input.Count - 1)
-                    {
-                        continue;
-                    }
-                    for (int x1 = x - 1; x1 <= x + 1; ++x1)
-                    {
-                        if (x1 < 0 || x1 > _input[y].Count - 1 || (x1 == x && y1 == y))
-                        {
-                            continue;
-                        }
-
-                        if (_input[y1][x1] < value)
-                        {
-                            goto endOfDoubleLoop;
-                        }
-                    }
-                }
-
-                lowPoints.Add((x, y));
-            endOfDoubleLoop:;
-            }
-        }
-
-        return new($"{lowPoints.Sum(point => _input[point.Y][point.X]) + lowPoints.Count}");
+        return new($"{lowPointList.Sum(point => _input[point.Y][point.X]) + lowPointList.Count}");
     }
 
     public override ValueTask<string> Solve_2()
     {
-        return new("");
+        var lowPointList = GetLowPoints(_input);
+        var basinList = new List<List<int>>();
+
+        foreach (var point in lowPointList)
+        {
+            var basinPointSet = new HashSet<IntPoint>(_input.Count) { point };
+
+            var minValue = _input[point.Y][point.X];
+            basinList.Add(new() { minValue });
+
+            GetBasin(_input, point, basinPointSet, basinList);
+        }
+
+        var result = basinList
+            .OrderByDescending(item => item.Count())
+            .Take(3)
+            .Aggregate(1, (total, basin) => total * basin.Count);
+
+        return new($"{result}");
     }
 
     private List<List<int>> ParseInput()
     {
         return File.ReadAllLines(InputFilePath).Select(str => str.Select(ch => int.Parse(ch.ToString())).ToList()).ToList();
+    }
+
+    private static List<IntPoint> GetLowPoints(List<List<int>> grid)
+    {
+        List<IntPoint> lowPoints = new();
+
+        for (int y = 0; y < grid.Count; ++y)
+        {
+            for (int x = 0; x < grid[y].Count; ++x)
+            {
+                var point = new IntPoint(x, y);
+                var value = grid[y][x];
+                var neighbours = GetNeighbours(grid, point);
+                if (neighbours.All(n => grid[n.Y][n.X] > value))
+                {
+                    lowPoints.Add(point);
+                }
+            }
+        }
+
+        return lowPoints;
+    }
+
+    private static List<IntPoint> GetNeighbours(List<List<int>> grid, IntPoint point)
+    {
+        return new List<IntPoint>{
+            point.Move(Direction.Down),
+            point.Move(Direction.Up),
+            point.Move(Direction.Left),
+            point.Move(Direction.Right),
+        }
+        .Where(p => p.X >= 0 && p.X < grid[0].Count && p.Y >= 0 && p.Y < grid.Count)
+        .ToList();
+    }
+
+    private static void GetBasin(List<List<int>> grid, IntPoint basinElement, HashSet<IntPoint> existingBasinPoints, List<List<int>> basin)
+    {
+        var neighbourList = GetNeighbours(grid, basinElement);
+        foreach (var neighbour in neighbourList)
+        {
+            var value = grid[neighbour.Y][neighbour.X];
+            if (value != 9 && existingBasinPoints.Add(neighbour))
+            {
+                basin.Last().Add(value);
+                GetBasin(grid, neighbour, existingBasinPoints, basin);
+            }
+        }
     }
 }
