@@ -12,7 +12,7 @@
             "program": "${workspaceFolder}/src/AoC_2021/bin/Debug/net6.0/AoC_2021.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/AoC_2021",
-            "console": "internalConsole",
+            "console": "externalTerminal",
             "stopAtEntry": false
         },
         {
