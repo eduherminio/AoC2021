@@ -25,35 +25,6 @@ namespace AoC_2021
         /// .    f  e    f  .    f  e    f  .    f
         /// .    f  e    f  .    f  e    f  .    f
         ///  gggg    gggg    ....    gggg    gggg
-        private static readonly IReadOnlyDictionary<string, int> _chars = new Dictionary<string, int>()
-        {
-            ["abcefg"] = 0,
-            ["cf"] = 1,
-            ["acdeg"] = 2,
-            ["acdfg"] = 3,
-            ["bcdf"] = 4,
-            ["abdfg"] = 5,
-            ["abdefg"] = 6,
-            ["acf"] = 7,
-            ["abcdefg"] = 8,
-            ["abcdfg"] = 9,
-        };
-
-        private static readonly List<IGrouping<int, KeyValuePair<string, int>>> _numbersByCharLength = _chars.GroupBy(ch => ch.Key.Length).ToList();
-
-        public Day_08()
-        {
-            _input = ParseInput().ToList();
-        }
-
-        public override ValueTask<string> Solve_1()
-        {
-            return new(_input
-                .SelectMany(pair => pair.Output.Select(output => output.Length))
-                .Count(nChars => nChars == 2 || nChars == 3 || nChars == 4 || nChars == 7)
-                .ToString());
-        }
-
         private static readonly IReadOnlyDictionary<short, HashSet<int>> _positionsByDigitDict = new Dictionary<short, HashSet<int>>()
         {
             [1] = new HashSet<int> { 3, 6 },                // Unique length
@@ -68,6 +39,19 @@ namespace AoC_2021
             [8] = new HashSet<int> { 1, 2, 3, 4, 5, 6, 7 } // Unique length
         };
 
+        public Day_08()
+        {
+            _input = ParseInput().ToList();
+        }
+
+        public override ValueTask<string> Solve_1()
+        {
+            return new(_input
+                .SelectMany(pair => pair.Output.Select(output => output.Length))
+                .Count(nChars => nChars == 2 || nChars == 3 || nChars == 4 || nChars == 7)
+                .ToString());
+        }
+
         public override ValueTask<string> Solve_2()
         {
             ImmutableArray<char> constantChars = ImmutableArray.Create(new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g' });
@@ -81,42 +65,6 @@ namespace AoC_2021
 
                 List<Dictionary<char, int>> finalPositionsByCharDictList = new() { new() };
                 var finalPositionsByCharDict = finalPositionsByCharDictList.Last();
-                // {
-
-                //     var combinations = new List<Dictionary<int, char>>() { new() };
-                //     foreach (var candidate in positionsByCharDict)
-                //     {
-                //         var newCombinations = new List<Dictionary<int, char>>(2 * combinations.Count);
-                //         foreach (var position in candidate.Value)
-                //         {
-                //             foreach (var combination in combinations)
-                //             {
-                //                 var newCombination = new Dictionary<int, char>(combination);
-                //                 if (!newCombination.TryAdd(position, candidate.Key))
-                //                 {
-                //                     continue;
-                //                 }
-                //                 newCombinations.Add(newCombination);
-                //             }
-                //         }
-
-                //         combinations = newCombinations;
-                //     }
-
-                //     if (combinations.Count == 1 && combinations[0].Count == positionsByCharDict.Count)
-                //     {
-                //         foreach (var pair in combinations[0])
-                //         {
-                //             finalPositionsByCharDict.Add(pair.Value, pair.Key);
-                //         }
-                //     }
-
-                //     var solutioDictionary = new Dictionary<string, int>(_positionsByDigitDict.Select(pair => new KeyValuePair<string, int>(string.Join("", pair.Value), pair.Key)));
-                //     var outpuResult = Output.Aggregate("", (acc, n) => acc + solutioDictionary[string.Join("", n.Select(ch => finalPositionsByCharDict[ch]).OrderBy(pos => pos))]);
-
-                //     ;
-                // }
-
 
                 Dictionary<short, HashSet<char>> knownCharsByDigitDict = GetCharsByDigit(SignalPatterns);
 
@@ -188,7 +136,6 @@ namespace AoC_2021
                             finalPositionsByCharDict[item.Key] = item.Value.First();
                             positionsByCharDict.Remove(item.Key);
                             charsWeCareAbout.Remove(item.Key);
-                            // updated = true;
                         }
                     }
 
@@ -229,7 +176,6 @@ namespace AoC_2021
                             return true;
                         }).ToList();
 
-                        //if (goodCombinations.Count == 1 && goodCombinations[0].Count == positionsByCharDict.Count)
                         foreach (var goodCombination in goodCombinations)
                         {
                             finalPositionsByCharDictList.Add(new(finalPositionsByCharDictList.First()));
@@ -279,116 +225,6 @@ namespace AoC_2021
             }
 
             return charByDigit;
-        }
-
-        public ValueTask<string> Solve__2()
-        {
-            var numbers = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
-
-            foreach (var input in _input)
-            {
-                var dict = new Dictionary<char, List<char>>()
-                {
-                    ['a'] = numbers.ToList(),
-                    ['b'] = numbers.ToList(),
-                    ['c'] = numbers.ToList(),
-                    ['d'] = numbers.ToList(),
-                    ['e'] = numbers.ToList(),
-                    ['f'] = numbers.ToList(),
-                    ['g'] = numbers.ToList()
-                };
-
-                var charByNumber = new Dictionary<char, List<int>>(
-                    numbers
-                        .Select(ch => new KeyValuePair<char, List<int>>(
-                            ch,
-                            _chars
-                                .Where(pair => pair.Key.Contains(ch))
-                                .Select(pair => pair.Value)
-                                .ToList())
-                    ));
-
-                var segments = InitializeSegments(input.SignalPatterns);
-
-                var solvedOutput = input.Output.Select(p =>
-                {
-                    var index = segments.IndexOf(p);
-
-                    return index != -1
-                    ? $"{index}"
-                    : p;
-                }).ToList();
-
-                static bool IsSolved(int n, List<string> solvedOutput) => solvedOutput[n].Length == 1;
-
-                while (solvedOutput.Any(s => s.Length != 1))
-                {
-                    var knowns = segments
-                        .Select((value, index) => (value, index))
-                        .Where(s => s.value != null)
-                        .ToList();
-
-                    foreach (var pair in charByNumber)
-                    {
-                        if (knowns.All(known => pair.Value.Contains(known.index)))
-                        {
-                            var intersection = dict[pair.Key];
-                            foreach (var known in knowns)
-                            {
-                                intersection = intersection.Intersect(known.value).ToList();
-                            }
-
-                            dict[pair.Key] = intersection;
-                        }
-                    }
-
-                    foreach (var pair in dict)
-                    {
-                        if (pair.Value.Count == 1)
-                        {
-                            charByNumber.Remove(pair.Key);
-                        }
-                    }
-
-                    var knownValues = dict.Where(pair => pair.Value.Count == 1);
-
-                    foreach (var unsolvedOutput in solvedOutput.Where(s => s.Length != 1))
-                    {
-                        if (unsolvedOutput.All(ch => knownValues.Select(p => p.Value[0]).Contains(ch)))
-                        {
-                            var str = "";
-                            foreach (var ch in unsolvedOutput)
-                            {
-                                str.Append(knownValues.Single(pair => pair.Value[0] == ch).Key);
-                            }
-
-                            str = new string(str.OrderBy(s => s).ToArray());
-
-                            var n = _chars[str];
-                        }
-                    }
-                }
-            }
-            return new("");
-        }
-
-        private static List<string> InitializeSegments(List<string> SignalPatters)
-        {
-            string[] segments = new string[10];
-
-            foreach (var pattern in SignalPatters)
-            {
-                var candidates = _numbersByCharLength
-                    .Where(n => n.Key == pattern.Length)
-                    .SelectMany(group => group.Select(pair => pair.Value));
-
-                if (candidates.Count() == 1)
-                {
-                    segments[candidates.First()] = pattern;
-                }
-            }
-
-            return segments.ToList();
         }
 
         private IEnumerable<(List<string> Input, List<string> Output)> ParseInput()
