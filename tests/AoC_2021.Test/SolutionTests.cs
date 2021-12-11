@@ -12,6 +12,7 @@ public class SolutionTests
     [TestCase(typeof(Day_05), "7438", "21406")]
     [TestCase(typeof(Day_06), "373378", "1682576647495")]
     [TestCase(typeof(Day_07), "355989", "102245489")]
+    [TestCase(typeof(Day_08), "440", "1046281")]
     [TestCase(typeof(Day_09), "423", "1198704")]
     [TestCase(typeof(Day_10), "394647", "2380061249")]
     public async Task Test(Type type, string sol1, string sol2)
