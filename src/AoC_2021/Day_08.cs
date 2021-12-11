@@ -52,7 +52,10 @@ namespace AoC_2021
                 .ToString());
         }
 
-        public override ValueTask<string> Solve_2()
+        public override ValueTask<string> Solve_2() => DeductionPlusBruteForce();
+
+        /// < 150ms
+        private ValueTask<string> DeductionPlusBruteForce()
         {
             ImmutableArray<char> constantChars = ImmutableArray.Create(new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g' });
             ImmutableArray<int> constantPositions = ImmutableArray.Create(new[] { 1, 2, 3, 4, 5, 6, 7 });
@@ -162,6 +165,8 @@ namespace AoC_2021
                             combinations = newCombinations;
                         }
 
+                        // Don't really needed, doesn't appear to discard any possibilities
+                        // This should be equivalent to all the magic done above, since in the brute force method is required to get the solution
                         var goodCombinations = combinations.Where(combination =>
                         {
                             foreach (var known in knownCharsByDigitDict)
@@ -199,7 +204,84 @@ namespace AoC_2021
                     {
                         string outputResult = Output.Aggregate("", (acc, n) => acc + solutionDictionary[string.Join("", n.Select(ch => allegedSol[ch]).OrderBy(pos => pos))]);
                         finalResult += int.Parse(outputResult);
-                        break;
+                        break;  // This prevents the situation where two combinations are vaid (and equivalent)
+                    }
+                    catch (Exception) { }
+                }
+            }
+
+            return new($"{finalResult}");
+        }
+
+        /// > 4s, not necessarily working
+        private ValueTask<string> BruteForce()
+        {
+            ImmutableArray<char> constantChars = ImmutableArray.Create(new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g' });
+            ImmutableArray<int> constantPositions = ImmutableArray.Create(new[] { 1, 2, 3, 4, 5, 6, 7 });
+
+            var finalResult = 0;
+            foreach (var (SignalPatterns, Output) in _input)
+            {
+                Dictionary<char, HashSet<int>> positionsByCharDict = new(constantChars.Select(c =>
+                    new KeyValuePair<char, HashSet<int>>(c, new HashSet<int>(constantPositions))));
+
+                List<Dictionary<char, int>> finalPositionsByCharDictList = new() { new() };
+
+                var combinations = new List<Dictionary<int, char>>() { new() };
+                foreach (var candidate in positionsByCharDict)
+                {
+                    var newCombinations = new List<Dictionary<int, char>>(2 * combinations.Count);
+                    foreach (var position in candidate.Value)
+                    {
+                        foreach (var combination in combinations)
+                        {
+                            var newCombination = new Dictionary<int, char>(combination);
+                            if (!newCombination.TryAdd(position, candidate.Key))
+                            {
+                                continue;
+                            }
+                            newCombinations.Add(newCombination);
+                        }
+                    }
+
+                    combinations = newCombinations;
+                }
+
+                Dictionary<short, HashSet<char>> knownCharsByDigitDict = GetCharsByDigit(SignalPatterns);
+
+                var goodCombinations = combinations.Where(combination =>
+                {
+                    foreach (var known in knownCharsByDigitDict)
+                    {
+                        var positions = known.Value.Select(val => combination.Single(c => c.Value == val).Key);
+                        if (positions.Any(pos => !_positionsByDigitDict[known.Key].Contains(pos)))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }).ToList();
+
+                foreach (var combination in goodCombinations)
+                {
+                    finalPositionsByCharDictList.Add(new(finalPositionsByCharDictList.First()));
+
+                    foreach (var pair in combination)
+                    {
+                        finalPositionsByCharDictList.Last()[pair.Value] = pair.Key;
+                    }
+                }
+
+                var solutionDictionary = new Dictionary<string, int>(_positionsByDigitDict.Select(pair => new KeyValuePair<string, int>(string.Join("", pair.Value), pair.Key)));
+
+                foreach (var allegedSol in finalPositionsByCharDictList)
+                {
+                    try
+                    {
+                        string outputResult = Output.Aggregate("", (acc, n) => acc + solutionDictionary[string.Join("", n.Select(ch => allegedSol[ch]).OrderBy(pos => pos))]);
+                        finalResult += int.Parse(outputResult);
+                        break;  // This prevents the situation where two combinations are vaid (and equivalent)
                     }
                     catch (Exception) { }
                 }
