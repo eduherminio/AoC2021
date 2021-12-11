@@ -213,7 +213,7 @@ namespace AoC_2021
             return new($"{finalResult}");
         }
 
-        /// > 4s, not necessarily working
+        /// > 4s
         private ValueTask<string> BruteForce()
         {
             ImmutableArray<char> constantChars = ImmutableArray.Create(new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g' });
