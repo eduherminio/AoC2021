@@ -22,9 +22,13 @@ sealed record class IntPointWithValue : IntPoint
         return new IntPointWithValue(base.Move(direction), Value);
     }
 
+    #region Equals override, to avoid taking into account Value for equality
+    
     public override int GetHashCode() => base.GetHashCode();
 
     public bool Equals(IntPointWithValue? other) => base.Equals(other);
+    
+    #endregion
 }
 
 public class Day_11 : BaseDay
@@ -77,7 +81,7 @@ public class Day_11 : BaseDay
                 GetNeighbours(_input, point))));
 
         int steps = 0;
-        while(!_input.All(p => p.Value == 0))
+        while (!_input.All(p => p.Value == 0))
         {
             // Print(_input, steps);
             foreach (var p in _input) ++p.Value;
