@@ -65,26 +65,25 @@ public class Day_12 : BaseDay
         var start = _input.First(n => n.IsStart());
         var end = _input.First(n => n.IsEnd());
 
-        List<(string Path, Node LastNode)> pathList = new() { (start.Id, start) };
+        List<List<Node>> pathList = new() { new() { start } };
 
-        while (pathList.Any(p => !p.LastNode.IsEnd()))
+        while (pathList.Any(p => !p.Last().IsEnd()))
         {
-            List<(string Path, Node LastNode)> newPathList = new(pathList.Where(p => p.LastNode.IsEnd()));
+            List<List<Node>> newPathList = new(pathList.Where(p => p.Last().IsEnd()));
             foreach (var path in pathList)
             {
-                if (path.LastNode != end)
+                var last = path.Last();
+                if (last != end)
                 {
-                    foreach (var connection in path.LastNode.Connections)
+                    foreach (var connection in last.Connections)
                     {
-                        var caves = path.Path.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                        var minorCaves = caves.Select(c => _input.First(i => i.Id == c)).Where(c => !c.IsMajor());
-
+                        var minorCaves = path.Where(c => !c.IsMajor());
                         var isMinorCaveRepeated = minorCaves.Distinct().Count() != minorCaves.Count();
 
-                        if (connection.IsMajor() || (!isMinorCaveRepeated || !path.Path.Contains($",{connection.Id},")) && !connection.IsStart())
+                        if (connection.IsMajor() || (!isMinorCaveRepeated || !path.Contains(connection)) && !connection.IsStart())
                         {
-                            var newPath = ($"{path.Path},{connection.Id}", connection);
-                            newPathList.Add(newPath);
+                            newPathList.Add(new(path));
+                            newPathList.Last().Add(connection);
                         }
                     }
                 }
