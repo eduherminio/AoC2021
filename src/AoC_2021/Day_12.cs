@@ -1,15 +1,22 @@
 ﻿namespace AoC_2021;
 
-sealed record class Node(string Id) : SheepTools.Model.GenericNode<string>(Id)
+sealed record class Node : SheepTools.Model.GenericNode<string>
 {
     private const string StartNodeId = "start";
     private const string EndNodeId = "end";
 
-    public bool IsMajor() => char.IsUpper(Id[0]);
-    public bool IsStart() => Id == StartNodeId;
-    public bool IsEnd() => Id == EndNodeId;
+    public bool IsMajor { get; init; }
+    public bool IsStart { get; init; }
+    public bool IsEnd { get; init; }
 
-    public HashSet<Node> Connections { get; set; } = new HashSet<Node>();
+    public HashSet<Node> Connections { get; } = new HashSet<Node>();
+
+    public Node(string id) : base(id)
+    {
+        IsMajor = char.IsUpper(id[0]);
+        IsStart = id == StartNodeId;
+        IsEnd = id == EndNodeId;
+    }
 
     #region Equals override, to avoid taking into account Connections for equality
 
@@ -31,7 +38,7 @@ public class Day_12 : BaseDay
 
     public override ValueTask<string> Solve_1()
     {
-        var start = _input.First(n => n.IsStart());
+        var start = _input.First(n => n.IsStart);
         List<(string Path, Node LastNode)> pathList = new(1000 * _input.Count) { (start.Id, start) };
 
         while (true)
@@ -39,7 +46,7 @@ public class Day_12 : BaseDay
             List<(string Path, Node LastNode)> newPathList = new(10 * pathList.Count);
             foreach (var path in pathList)
             {
-                if (path.LastNode.IsEnd())
+                if (path.LastNode.IsEnd)
                 {
                     newPathList.Add(path);
                 }
@@ -47,7 +54,7 @@ public class Day_12 : BaseDay
                 {
                     foreach (var connection in path.LastNode.Connections)
                     {
-                        if (connection.IsMajor() || (!connection.IsStart() && !path.Path.Contains($",{connection.Id},")))
+                        if (connection.IsMajor || (!connection.IsStart && !path.Path.Contains($",{connection.Id},")))
                         {
                             var newPath = ($"{path.Path},{connection.Id}", connection);
                             newPathList.Add(newPath);
@@ -69,7 +76,7 @@ public class Day_12 : BaseDay
 
     public override ValueTask<string> Solve_2()
     {
-        var start = _input.First(n => n.IsStart());
+        var start = _input.First(n => n.IsStart);
         List<List<Node>> pathList = new(1000 * _input.Count) { new() { start } };
 
         while (true)
@@ -78,7 +85,7 @@ public class Day_12 : BaseDay
             foreach (var path in pathList)
             {
                 var last = path.Last();
-                if (last.IsEnd())
+                if (last.IsEnd)
                 {
                     newPathList.Add(path);
                 }
@@ -86,10 +93,10 @@ public class Day_12 : BaseDay
                 {
                     foreach (var connection in last.Connections)
                     {
-                        var minorCaves = path.Where(c => !c.IsMajor());
+                        var minorCaves = path.Where(c => !c.IsMajor);
                         var isMinorCaveRepeated = minorCaves.Distinct().Count() != minorCaves.Count();
 
-                        if (connection.IsMajor() || (!connection.IsStart() && (!isMinorCaveRepeated || !path.Contains(connection))))
+                        if (connection.IsMajor || (!connection.IsStart && (!isMinorCaveRepeated || !path.Contains(connection))))
                         {
                             newPathList.Add(path.Append(connection).ToList());
                         }
