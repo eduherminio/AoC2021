@@ -32,8 +32,6 @@ public class Day_12 : BaseDay
     public override ValueTask<string> Solve_1()
     {
         var start = _input.First(n => n.IsStart());
-        var end = _input.First(n => n.IsEnd());
-
         List<(string Path, Node LastNode)> pathList = new() { (start.Id, start) };
 
         while (pathList.Any(p => !p.LastNode.IsEnd()))
@@ -41,7 +39,7 @@ public class Day_12 : BaseDay
             List<(string Path, Node LastNode)> newPathList = new(pathList.Where(p => p.LastNode.IsEnd()));
             foreach (var path in pathList)
             {
-                if (path.LastNode != end)
+                if (!path.LastNode.IsEnd())
                 {
                     foreach (var connection in path.LastNode.Connections)
                     {
@@ -63,8 +61,6 @@ public class Day_12 : BaseDay
     public override ValueTask<string> Solve_2()
     {
         var start = _input.First(n => n.IsStart());
-        var end = _input.First(n => n.IsEnd());
-
         List<List<Node>> pathList = new() { new() { start } };
 
         while (pathList.Any(p => !p.Last().IsEnd()))
@@ -73,7 +69,7 @@ public class Day_12 : BaseDay
             foreach (var path in pathList)
             {
                 var last = path.Last();
-                if (last != end)
+                if (!last.IsEnd())
                 {
                     foreach (var connection in last.Connections)
                     {

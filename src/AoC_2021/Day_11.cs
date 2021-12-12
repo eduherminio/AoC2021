@@ -1,5 +1,4 @@
-﻿using System.Text;
-using SheepTools.Model;
+﻿using SheepTools.Model;
 
 namespace AoC_2021;
 
@@ -23,25 +22,21 @@ sealed record class IntPointWithValue : IntPoint
     }
 
     #region Equals override, to avoid taking into account Value for equality
-    
+
     public override int GetHashCode() => base.GetHashCode();
 
     public bool Equals(IntPointWithValue? other) => base.Equals(other);
-    
+
     #endregion
 }
 
+/// Reading the input in each, since we modify it
 public class Day_11 : BaseDay
 {
-    private List<IntPointWithValue> _input;
-
-    public Day_11()
-    {
-        _input = ParseInput().ToList();
-    }
-
     public override ValueTask<string> Solve_1()
     {
+        var _input = ParseInput().ToList();
+
         const int steps = 100;
         Dictionary<IntPoint, List<IntPointWithValue>> neighbours = new(_input
             .Select(point => new KeyValuePair<IntPoint, List<IntPointWithValue>>(
@@ -74,7 +69,8 @@ public class Day_11 : BaseDay
 
     public override ValueTask<string> Solve_2()
     {
-        _input = ParseInput().ToList();
+        var _input = ParseInput().ToList();
+
         Dictionary<IntPoint, List<IntPointWithValue>> neighbours = new(_input
             .Select(point => new KeyValuePair<IntPoint, List<IntPointWithValue>>(
                 point,
