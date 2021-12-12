@@ -32,24 +32,33 @@ public class Day_12 : BaseDay
     public override ValueTask<string> Solve_1()
     {
         var start = _input.First(n => n.IsStart());
-        List<(string Path, Node LastNode)> pathList = new() { (start.Id, start) };
+        List<(string Path, Node LastNode)> pathList = new(1000 * _input.Count) { (start.Id, start) };
 
-        while (pathList.Any(p => !p.LastNode.IsEnd()))
+        while (true)
         {
-            List<(string Path, Node LastNode)> newPathList = new(pathList.Where(p => p.LastNode.IsEnd()));
+            List<(string Path, Node LastNode)> newPathList = new(10 * pathList.Count);
             foreach (var path in pathList)
             {
-                if (!path.LastNode.IsEnd())
+                if (path.LastNode.IsEnd())
+                {
+                    newPathList.Add(path);
+                }
+                else
                 {
                     foreach (var connection in path.LastNode.Connections)
                     {
-                        if (connection.IsMajor() || (!path.Path.Contains($",{connection.Id},") && !connection.IsStart()))
+                        if (connection.IsMajor() || (!connection.IsStart() && !path.Path.Contains($",{connection.Id},")))
                         {
                             var newPath = ($"{path.Path},{connection.Id}", connection);
                             newPathList.Add(newPath);
                         }
                     }
                 }
+            }
+
+            if (pathList.Count == newPathList.Count)
+            {
+                break;
             }
 
             pathList = newPathList;
@@ -61,28 +70,36 @@ public class Day_12 : BaseDay
     public override ValueTask<string> Solve_2()
     {
         var start = _input.First(n => n.IsStart());
-        List<List<Node>> pathList = new() { new() { start } };
+        List<List<Node>> pathList = new(1000 * _input.Count) { new() { start } };
 
-        while (pathList.Any(p => !p.Last().IsEnd()))
+        while (true)
         {
-            List<List<Node>> newPathList = new(pathList.Where(p => p.Last().IsEnd()));
+            List<List<Node>> newPathList = new(10 * pathList.Count);
             foreach (var path in pathList)
             {
                 var last = path.Last();
-                if (!last.IsEnd())
+                if (last.IsEnd())
+                {
+                    newPathList.Add(path);
+                }
+                else
                 {
                     foreach (var connection in last.Connections)
                     {
                         var minorCaves = path.Where(c => !c.IsMajor());
                         var isMinorCaveRepeated = minorCaves.Distinct().Count() != minorCaves.Count();
 
-                        if (connection.IsMajor() || (!isMinorCaveRepeated || !path.Contains(connection)) && !connection.IsStart())
+                        if (connection.IsMajor() || (!connection.IsStart() && (!isMinorCaveRepeated || !path.Contains(connection))))
                         {
-                            newPathList.Add(new(path));
-                            newPathList.Last().Add(connection);
+                            newPathList.Add(path.Append(connection).ToList());
                         }
                     }
                 }
+            }
+
+            if (pathList.Count == newPathList.Count)
+            {
+                break;
             }
 
             pathList = newPathList;
