@@ -12,7 +12,7 @@ sealed record class IntPointWithValue : IntPoint
         Value = value;
     }
 
-    public IntPointWithValue(IntPoint point, int value) : base(point.X, point.Y)
+    private IntPointWithValue(IntPoint point, int value) : base(point.X, point.Y)
     {
         Value = value;
     }
@@ -57,11 +57,9 @@ public class Day_11 : BaseDay
                     if (point.Value > 9)
                     {
                         ++flashesCount;
-
                         point.Value = 0;
 
-                        var pointNeighbours = neighbours[point];
-                        foreach (var p in pointNeighbours) if (p.Value != 0) ++p.Value;
+                        foreach (var p in neighbours[point]) if (p.Value != 0) ++p.Value;
                     }
                 }
             }
@@ -92,8 +90,7 @@ public class Day_11 : BaseDay
                     {
                         point.Value = 0;
 
-                        var pointNeighbours = neighbours[point];
-                        foreach (var p in pointNeighbours) if (p.Value != 0) ++p.Value;
+                        foreach (var p in neighbours[point]) if (p.Value != 0) ++p.Value;
                     }
                 }
             }
@@ -157,5 +154,4 @@ public class Day_11 : BaseDay
             Console.WriteLine();
         }
     }
-
 }
