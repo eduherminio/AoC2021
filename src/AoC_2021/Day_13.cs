@@ -72,16 +72,8 @@ public class Day_13 : BaseDay
         foreach (var y in RangeHelpers.GenerateRange(points.Min(p => p.Y), points.Max(p => p.Y)))
         {
             foreach (var x in RangeHelpers.GenerateRange(points.Min(p => p.X), points.Max(p => p.X)))
-            {
-                if (points.Any(p => p.X == x && p.Y == y))
-                {
-                    sb.Append('X');
-                }
-                else
-                {
-                    sb.Append('.');
-                }
-            }
+                sb.Append(points.Any(p => p.X == x && p.Y == y) ? 'X' : '.');
+            
             sb.Append(Environment.NewLine);
         }
 
