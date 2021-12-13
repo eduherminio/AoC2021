@@ -28,7 +28,7 @@ public class Day_13 : BaseDay
         {
             resultsGrid = Fold(resultsGrid, instruction);
         }
-        ;
+
         return new(Print(resultsGrid));
     }
 
