@@ -15,9 +15,17 @@ public class Day_14 : BaseDay
 
     public override ValueTask<string> Solve_1()
     {
-        var result = _input.Template;
-        for (int step = 0; step < 10; ++step)
+        var result = Mutate(10, _input.Template, _input.Instructions);
+
+        return new($"{result.Max.Count - result.Min.Count}");
+    }
+
+    private static ((char Key, int Count) Max, (char Key, int Count) Min) Mutate(int stepCount, string template, List<(string pattern, string Value)> instructions)
+    {
+        var result = template;
+        for (int step = 0; step < stepCount; ++step)
         {
+            Console.WriteLine($"Step {step + 1}, length {result.Length}");
             var sb = new StringBuilder();
 
             var prevChar = '\n';
@@ -25,7 +33,7 @@ public class Day_14 : BaseDay
             {
                 var patt = $"{prevChar}{ch}";
 
-                var matching = _input.Instructions.FirstOrDefault(i => i.pattern == patt);
+                var matching = instructions.FirstOrDefault(i => i.pattern == patt);
                 if (matching != default)
                 {
                     sb.Remove(sb.Length - 1, 1);
@@ -42,43 +50,24 @@ public class Day_14 : BaseDay
         }
 
         var groups = result.GroupBy(i => i).OrderByDescending(g => g.Count());
-        var diff = groups.First().Count() - groups.Last().Count();
 
-        return new($"{diff}");
+        return (
+            (groups.First().Key, groups.First().Count()),
+            (groups.Last().Key, groups.Last().Count()));
     }
 
     public override ValueTask<string> Solve_2()
     {
-        // return new("");
-        var result = _input.Template;
-        for (int step = 0; step < 40; ++step)
-        {
-            Console.WriteLine($"Step {step + 1}");
-            var sb = new StringBuilder();
+        var result = Mutate(10, _input.Template, _input.Instructions);
 
-            var prevChar = '\n';
-            foreach (var ch in result)
-            {
-                var patt = $"{prevChar}{ch}";
+        var filteredInstructions = _input.Instructions.Where(i =>
+            i.pattern.Contains(result.Max.Key)
+            || i.Value.Contains(result.Max.Key)
+            || i.pattern.Contains(result.Min.Key)
+            || i.Value.Contains(result.Min.Key))
+            .ToList();
 
-                var matching = _input.Instructions.FirstOrDefault(i => i.pattern == patt);
-                if (matching != default)
-                {
-                    sb.Remove(sb.Length - 1, 1);
-                    sb.Append(matching.Value);
-                }
-                else
-                {
-                    sb.Append(ch);
-                }
-                prevChar = ch;
-            }
-
-            result = sb.ToString();
-        }
-
-        var groups = result.GroupBy(i => i).OrderByDescending(g => g.LongCount());
-        var diff = groups.First().LongCount() - groups.Last().LongCount();
+        var diff = Mutate(40, _input.Template, filteredInstructions);
 
         return new($"{diff}");
     }
