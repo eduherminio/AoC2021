@@ -49,7 +49,7 @@ public class Day_14 : BaseDay
 
     public override ValueTask<string> Solve_2()
     {
-        return new("");
+        // return new("");
         var result = _input.Template;
         for (int step = 0; step < 40; ++step)
         {
@@ -77,8 +77,8 @@ public class Day_14 : BaseDay
             result = sb.ToString();
         }
 
-        var groups = result.GroupBy(i => i).OrderByDescending(g => g.Count());
-        var diff = groups.First().Count() - groups.Last().Count();
+        var groups = result.GroupBy(i => i).OrderByDescending(g => g.LongCount());
+        var diff = groups.First().LongCount() - groups.Last().LongCount();
 
         return new($"{diff}");
     }
