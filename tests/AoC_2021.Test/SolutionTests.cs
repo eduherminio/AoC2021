@@ -25,6 +25,7 @@ X.......X.X..X.XXXX..X...X..X.X.X..X..X
 X..X.X..X.X..X.X..X.X....X..X.X.X..X..X
 .XX...XX..X..X.X..X.XXXX.X..X.X..X..XX.
 ")]
+    [TestCase(typeof(Day_14), "2937", "")]
     public async Task Test(Type type, string sol1, string sol2)
     {
         if (Activator.CreateInstance(type) is BaseProblem instance)
