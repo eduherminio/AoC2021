@@ -75,7 +75,7 @@ public class Day_09 : BaseDay
             point.Move(Direction.Left),
             point.Move(Direction.Right),
         }
-        .Where(p => p.X >= 0 && p.X < grid[0].Count && p.Y >= 0 && p.Y < grid.Count)
+        .Where(p => p.Y >= 0 && p.Y < grid.Count && p.X >= 0 && p.X < grid[0].Count)
         .ToList();
     }
 

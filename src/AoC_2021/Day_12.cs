@@ -1,34 +1,34 @@
 ﻿namespace AoC_2021;
 
-sealed record class Node : SheepTools.Model.GenericNode<string>
-{
-    private const string StartNodeId = "start";
-    private const string EndNodeId = "end";
-
-    public bool IsMajor { get; init; }
-    public bool IsStart { get; init; }
-    public bool IsEnd { get; init; }
-
-    public HashSet<Node> Connections { get; } = new HashSet<Node>();
-
-    public Node(string id) : base(id)
-    {
-        IsMajor = char.IsUpper(id[0]);
-        IsStart = id == StartNodeId;
-        IsEnd = id == EndNodeId;
-    }
-
-    #region Equals override, to avoid taking into account Connections for equality
-
-    public override int GetHashCode() => base.GetHashCode();
-
-    public bool Equals(Node? other) => base.Equals(other);
-
-    #endregion
-}
-
 public class Day_12 : BaseDay
 {
+    sealed record class Node : SheepTools.Model.GenericNode<string>
+    {
+        private const string StartNodeId = "start";
+        private const string EndNodeId = "end";
+
+        public bool IsMajor { get; init; }
+        public bool IsStart { get; init; }
+        public bool IsEnd { get; init; }
+
+        public HashSet<Node> Connections { get; } = new HashSet<Node>();
+
+        public Node(string id) : base(id)
+        {
+            IsMajor = char.IsUpper(id[0]);
+            IsStart = id == StartNodeId;
+            IsEnd = id == EndNodeId;
+        }
+
+        #region Equals override, to avoid taking into account Connections for equality
+
+        public override int GetHashCode() => base.GetHashCode();
+
+        public bool Equals(Node? other) => base.Equals(other);
+
+        #endregion
+    }
+    
     private readonly HashSet<Node> _input;
 
     public Day_12()
