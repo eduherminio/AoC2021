@@ -22,25 +22,27 @@ public class Day_14 : BaseDay
 
     public override ValueTask<string> Solve_2()
     {
-        // var result = Mutate(10, _input.Template, _input.Instructions);
+        var result = Mutate(10, _input.Template, _input.Instructions);
 
 
         // var other = _input.Instructions.SelectMany(i => i.Value).ToHashSet();
-        // var filteredInstructions = _input.Instructions.Where(i =>
-        //     i.pattern.Contains(result.Max.Key)
-        //     || i.Value.Contains(result.Max.Key)
-        //     || i.pattern.Contains(result.Min.Key)
-        //     || i.Value.Contains(result.Min.Key))
-        //     .ToList();
+        var filteredInstructions = _input.Instructions.Where(i =>
+            i.pattern.Contains('B')
+            || i.Value.Contains('B'))
+            // || i.pattern.Contains(result.Min.Key)
+            // || i.Value.Contains(result.Min.Key))
+            .ToList();
 
-        // var producers = new HashSet<char>(filteredInstructions.SelectMany(i => i.pattern)){
-        //     result.Max.Key,
-        //     result.Min.Key,
-        // };
+        var producers = new HashSet<char>(filteredInstructions.SelectMany(i => i.pattern))
+        {
+            'B',
+        };
         // var moreFilteredInstructions = _input.Instructions.Where(i => i.Value.Intersect(producers).Count() > 0).ToList();
 
-        // _input.Instructions.RemoveAll(i => new string(i.Value.Intersect(producers).ToArray()) == i.pattern);
+        _input.Instructions.RemoveAll(i => new string(i.Value.Intersect(producers).ToArray()) == i.Value);
         const int steps = 15;
+
+        var x = Mutate(steps, _input.Template, _input.Instructions);
 
         return new($"{MutateOptimized(steps, _input.Template, _input.Instructions)}");
     }
